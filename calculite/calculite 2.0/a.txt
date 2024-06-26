@@ -1,0 +1,209 @@
+ // Toni no nos zurres :c
+
+    var _operator = ""
+    var _num1
+    var _num2
+    var _ifResult = false
+    var _error
+
+    let _numbers = document.querySelectorAll(".numeros button")
+    let _operators = document.querySelectorAll(".operadores button")
+
+    _numbers.forEach((_num) => {  
+        _num.addEventListener("click", () => {
+            addInputNumber(_num.textContent)
+        })
+    })
+
+    _operators.forEach((_op) => {
+        _op.addEventListener("click", () => {
+            _operator = _op.textContent;
+            if (document.getElementById("input").value != "") {
+                _num1 = document.getElementById("input").value
+                document.getElementById("input").value = ""
+                _ifResult = false
+                toggleNums(true)
+            }
+        })
+    })
+
+    function getZero() {
+        if (document.getElementById("input").value != "0") {
+            let _num = document.getElementById("zero").value
+            print(_num)
+        }
+    }
+
+    function comma() {
+        if (document.getElementById("input").value == "") {
+            document.getElementById("input").value = "0"
+        }
+        let input = document.getElementById("input").value
+        input = input.replace(',', '')
+        input += ","
+        document.getElementById("input").value = input;
+    }
+
+    function addInputNumber(_num) {
+        if (_error) {
+            reset("ResetAll")
+            _error = false
+        } else {
+            if (document.getElementById("input").value.length <= 8) {
+                if (document.getElementById("input").value == "0") {
+                    document.getElementById("input").value = ""
+                }
+                document.getElementById("input").value += _num
+            }
+            if (document.getElementById("input").value.length == 9) {
+                toggleNums(false)
+            }
+            toggleButtons(false, "toggleNegative")
+        }
+    }
+
+    function toggleNums(flag) {
+        if (!flag) {
+            _numbers.forEach(number => {
+                number.disabled = true
+                number.classList.add("disabled")
+            })
+            document.getElementById("zero").classList.add("disabled")
+            document.getElementById("comma").classList.add("disabled")
+            document.getElementById("zero").disabled = true;
+            document.getElementById("comma").disabled = true;
+        }
+        else {
+            _numbers.forEach(number => {
+                number.disabled = false
+                number.classList.remove("disabled")
+            })
+            document.getElementById("zero").classList.remove("disabled")
+            document.getElementById("comma").classList.remove("disabled")
+            document.getElementById("zero").disabled = false;
+            document.getElementById("comma").disabled = false;
+        }
+    }
+
+    function reset(_res) {
+        if (_res != "ResetAll") {
+            document.getElementById("input").value = _res ?? "0"
+            _num1 = _res
+        } else {
+            document.getElementById("input").value = "0"
+            _num1 = 0
+        }
+        toggleNums(true)
+        _operator = ""
+
+        _num2 = 0
+        _ifResult = false
+
+        toggleButtons(false, "toggleNegative")
+    }
+
+    function Positive_Negative() {
+        if (_error) {
+            reset("ResetAll")
+            _error = false
+        } else {
+            document.getElementById("input").value = parseFloat(document.getElementById("input").value) * (-1)
+        }
+    }
+
+    function result() {
+        if (_error) {
+            reset("ResetAll")
+            _error = false
+        } 
+        else {
+            let _res
+            if (!_ifResult) {
+                if (_operator != "") {
+                    if (document.getElementById("input").value != "") {
+                        _num2 = document.getElementById("input").value
+                    } else {
+                        _num2 = _num1
+                    }
+
+                    _num1 = _num1.replace(',', '.')
+                    _num2 = _num2.replace(',', '.')
+
+                    _res = calculation()
+
+                    reset(_res) // Keep result on _num1
+
+                    _valRes = validateResult(_res)
+
+                    _valRes = String(_valRes).replace('.', ',')
+
+                    document.getElementById("input").value = _valRes
+
+                    toggleButtons(true, "toggleNegative")
+                    toggleNums(false)
+
+                    _ifResult = true
+                }
+            } else {
+                reset("ResetAll")
+            }
+        }
+    }
+
+    function toggleButtons(_active, _id) {
+
+        if (_active) {
+            document.getElementById(_id).disabled = true
+            document.getElementById(_id).style.opacity = '50%'
+        } else {
+            document.getElementById(_id).style.opacity = '100%'
+            document.getElementById(_id).disabled = false
+        }
+    }
+
+    function validateResult(_res) {
+        _res = String(_res)
+        _res = parseFloat(_res)
+        if (String(_res).length <= 9) {
+            return _res
+        } else {
+            return _res.toExponential([2])
+        }
+    }
+
+    function calculation() {
+        let _result
+        _num1 = parseFloat(_num1)
+        _num2 = parseFloat(_num2)
+
+        switch (_operator) {
+            case "+":
+                _result = _num1 + _num2
+                break
+            case "-":
+                _result = _num1 - _num2
+                break
+            case "/":
+                if (_num2 != 0) {
+                    _result = _num1 / _num2
+                } else {
+                    _result = "Math Error"
+                    _error = true
+                }
+                break
+            case "x":
+                _result = _num1 * _num2
+                break
+        }
+        return _result
+    }
+
+    const copyToClipboard = async () => {
+        let text = document.getElementById('input').value;
+        try {
+            await navigator.clipboard.writeText(text);
+            alert('Copied to clipboard');
+        } catch (err) {
+            alert('Error copying: ', err);
+        }
+    }

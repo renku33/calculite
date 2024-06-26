@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="main.js"></script>
+</head>
+
+<body onload="initCalculator()">
+    <div class="general">
+        <div class="input">
+            <input type="text" id="calculatorDisplay" value="0" readonly>
+        </div>
+        <div class="botones">
+            <div class="blue">
+                <div class="numbers">
+                    <button id="1" value="1">1</button>
+                    <button id="2" value="2">2</button>
+                    <button id="3" value="3">3</button>
+                    <button id="4" value="4">4</button>
+                    <button id="5" value="5">5</button>
+                    <button id="6" value="6">6</button>
+                    <button id="7" value="7">7</button>
+                    <button id="8" value="8">8</button>
+                    <button id="9" value="9">9</button>
+                </div>
+                <div class="coma_y_zero">
+                    <button id="0" value="0" class="rectangular azul">0</button>
+                    <button id="decimal" value="." class="coma">,</button>
+                </div>
+            </div>
+            <div class="red">
+                <div class="operators">
+                    <button>+</button>
+                    <button>-</button>
+                    <button>x</button>
+                    <button>/</button>
+                </div>
+                <div class="igual">
+                    <button class="button_igual">=</button>
+                    <button id="toggleNegative" class="rectangular">+/-</button>
+                    <button class="rectangular">AC</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
