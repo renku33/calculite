@@ -12,6 +12,8 @@ let domOperatorsButtons
 let domZeroDecimalButtons
 let domEqualResetNegativeButtons
 
+// hacer clipboard
+
 // initialize calculite
 function initCalculator () {
   domNumbersButtons = document.querySelectorAll('.numbers button')
@@ -59,6 +61,7 @@ function storeOperatorValue (operatorButtonValue) {
   changeCalculatorStatus('updateDisplay', '') // hacer que no se borre el numero sino que se actualice por el segundo (toDo)
   changeCalculatorStatus('enableButton', 'numbers')
   changeCalculatorStatus('enableButton', 'zero_decimal')
+  currentOperand = ''
 }
 
 function storeNumberValue (numberButtonValue) {
@@ -81,12 +84,12 @@ function equalResetNegativeFunctions (equalResetNegativeValue) {
         result = calculateResult()
         resetCalculator() // resetea el secondOperator
         validateAllowedLenght() // exclusivamente para el result
-        firstOperand = result
+        currentOperand = result
         changeCalculatorStatus('updateDisplay', result)
         changeCalculatorStatus('disableButton', 'numbers')
         changeCalculatorStatus('disableButton', 'zero_decimal')
       } else {
-        changeCalculatorStatus('updateDisplay', firstOperand)
+        changeCalculatorStatus('updateDisplay', currentOperand)
       }
       break
     case 'negative':
@@ -157,7 +160,7 @@ function changeCalculatorStatus (optionState, parameterToTransfer) {
 
 // logica calculite
 function disableButtons (buttonToBlock) {
-  const buttons = document.querySelectorAll(`.${buttonToBlock} button`)
+  let buttons = document.querySelectorAll(`.${buttonToBlock} button`)
 
   buttons.forEach(function (button) {
     button.disabled = true
@@ -166,14 +169,14 @@ function disableButtons (buttonToBlock) {
 
 function setCurrentOperand() {
   if (!selectedOperator) {
-    firstOperand = operandSelected
+    firstOperand = currentOperand
   } else {
-    secondOperand = operandSelected
+    secondOperand = currentOperand
   }
 }
 
 function enableButtons (buttonToBlock) {
-  const buttons = document.querySelectorAll(`.${buttonToBlock} button`)
+  let buttons = document.querySelectorAll(`.${buttonToBlock} button`)
 
   buttons.forEach(function (button) {
     button.disabled = false
@@ -233,15 +236,10 @@ function calculateResult () {
 }
 
 function validateAllowedLenght () {
-  let firstOperandString = String(firstOperand) // se pasa a string para poder medir la largura
-  let secondOperandString = String(secondOperand)
+  let currentOperandString = String(currentOperand) // se pasa a string para poder medir la largura
   let resultString = String(result)
 
-  if (!selectedOperator) {
-    validateOperandLength(firstOperandString)
-  } else {
-    validateOperandLength(secondOperandString)
-  }
+  validateOperandLength(currentOperandString)
 
   if (resultString.length > MAX_DISPLAY_DIGIT_LENGTH) {
     result = result.toExponential(2)
