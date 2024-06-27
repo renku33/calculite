@@ -64,16 +64,11 @@ function storeOperatorValue (operatorButtonValue) {
 function storeNumberValue (numberButtonValue) {
   let tempStringValue
 
-  if (!selectedOperator) {
-    tempStringValue = String(firstOperand) + numberButtonValue // se pasa a string para poder concatenar
-    firstOperand = parseFloat(tempStringValue)
-    changeCalculatorStatus('updateDisplay', firstOperand)
-  } else {
-    tempStringValue = String(secondOperand) + numberButtonValue
-    secondOperand = parseFloat(tempStringValue)
-    changeCalculatorStatus('updateDisplay', secondOperand)
-  }
-
+  tempStringValue = String(currentOperand) + numberButtonValue // se pasa a string para poder concatenar
+  currentOperand = parseFloat(tempStringValue)
+  changeCalculatorStatus('updateDisplay', currentOperand)
+  
+  setCurrentOperand()
   validateAllowedLenght()
   changeCalculatorStatus('enableButton', 'operators')
 }
@@ -81,7 +76,7 @@ function storeNumberValue (numberButtonValue) {
 function equalResetNegativeFunctions (equalResetNegativeValue) {
   switch (equalResetNegativeValue) {
     case '=':
-      const operationIsPossible = validateOperation()
+      let operationIsPossible = validateOperation()
       if (operationIsPossible) {
         result = calculateResult()
         resetCalculator() // resetea el secondOperator
@@ -107,40 +102,26 @@ function storeZeroDecimalValue (ZeroDecimalValue) {
   let tempStringValue
   switch (ZeroDecimalValue) {
     case '0':
-      if (!selectedOperator) {
-        if (firstOperand) {
-          tempStringValue = String(firstOperand) + ZeroDecimalValue // se pasa a string para poder concatenar
-          firstOperand = parseFloat(tempStringValue)
-          validateAllowedLenght()
-          changeCalculatorStatus('updateDisplay', firstOperand)
-        }
-      } else {
-        tempStringValue = String(secondOperand) + ZeroDecimalValue // se pasa a string para poder concatenar
-        secondOperand = parseFloat(tempStringValue)
+      if (firstOperand) {
+        tempStringValue = String(currentOperand) + ZeroDecimalValue // se pasa a string para poder concatenar
+        currentOperand = parseFloat(tempStringValue)
         validateAllowedLenght()
-        changeCalculatorStatus('updateDisplay', secondOperand)
+        changeCalculatorStatus('updateDisplay', currentOperand)
       }
+      setCurrentOperand()
       break
     case '.':
       // la meto en la posicion 9
-      if (!selectedOperator) {
-        if (!firstOperand) {
-          firstOperand = '0.'
-        } else {
-          firstOperand = String(firstOperand)
-          firstOperand = firstOperand.replace('.', '')
-          firstOperand = firstOperand + ZeroDecimalValue // se pasa a string para poder concatenar
-        }
-        changeCalculatorStatus('updateDisplay', firstOperand)
-      } else {
-        if (!secondOperand) {
-          secondOperand = '0.'
-        } else {
-          secondOperand = String(secondOperand)
-          secondOperand = secondOperand.replace('.', '')
-          secondOperand = secondOperand + ZeroDecimalValue // se pasa a string para poder concatenar
-        }
-      }
+      if (!currentOperand) {
+        currentOperand = '0.'
+      } 
+      
+      currentOperand = String(currentOperand)
+      currentOperand = currentOperand.replace('.', '')
+      currentOperand = currentOperand + ZeroDecimalValue // se pasa a string para poder concatenar
+      
+      setCurrentOperand()
+      changeCalculatorStatus('updateDisplay', currentOperand)
       changeCalculatorStatus('disableButton', 'operators')
       break
   }
@@ -203,6 +184,7 @@ function resetCalculator () {
   selectedOperator = ''
   firstOperand = ''
   secondOperand = ''
+  currentOperand = ''
   isCurrentOperandNegative = false
   changeCalculatorStatus('enableButton', 'numbers')
   changeCalculatorStatus('enableButton', 'zero_decimal')
@@ -210,13 +192,10 @@ function resetCalculator () {
 }
 
 function toggleNegativePositive () {
-  if (!selectedOperator) {
-    firstOperand = firstOperand * (-1)
-    changeCalculatorStatus('updateDisplay', firstOperand)
-  } else {
-    secondOperand = secondOperand * (-1)
-    changeCalculatorStatus('updateDisplay', secondOperand)
-  }
+  
+  currentOperand = currentOperand * (-1)
+  changeCalculatorStatus('updateDisplay', currentOperand)
+  setCurrentOperand()
 
   isCurrentOperandNegative = !isCurrentOperandNegative
   validateAllowedLenght()
