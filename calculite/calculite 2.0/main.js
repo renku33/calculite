@@ -5,9 +5,12 @@ let firstOperand = ''
 let secondOperand = ''
 let result = ''
 let isCurrentOperandNegative = false
+let operandSelected = ''
+
 let domNumbersButtons
 let domOperatorsButtons
 let domZeroDecimalButtons
+
 // initialize calculite
 function initCalculator () {
   domNumbersButtons = document.querySelectorAll('.numbers button')
@@ -100,9 +103,9 @@ function equalResetNegativeFunctions (equalResetNegativeValue) {
 }
 
 function storeZeroDecimalValue (ZeroDecimalValue) {
+  let tempStringValue
   switch (ZeroDecimalValue) {
     case '0':
-      let tempStringValue
       if (!selectedOperator) {
         if (firstOperand) {
           tempStringValue = String(firstOperand) + ZeroDecimalValue // se pasa a string para poder concatenar
@@ -118,7 +121,26 @@ function storeZeroDecimalValue (ZeroDecimalValue) {
       }
       break
     case '.':
-
+      // la meto en la posicion 9
+      if (!selectedOperator) {
+        if (!firstOperand) {
+          firstOperand = '0.'
+        } else {
+          firstOperand = String(firstOperand)
+          firstOperand = firstOperand.replace('.', '')
+          firstOperand = firstOperand + ZeroDecimalValue // se pasa a string para poder concatenar
+        }
+        changeCalculatorStatus('updateDisplay', firstOperand)
+      } else {
+        if (!secondOperand) {
+          secondOperand = '0.'
+        } else {
+          secondOperand = String(secondOperand)
+          secondOperand = secondOperand.replace('.', '')
+          secondOperand = secondOperand + ZeroDecimalValue // se pasa a string para poder concatenar
+        }
+      }
+      changeCalculatorStatus('disableButton', 'operators')
       break
   }
 }
@@ -158,6 +180,14 @@ function disableButtons (buttonToBlock) {
   buttons.forEach(function (button) {
     button.disabled = true
   })
+}
+
+function updateCurrentOperand() {
+  if (!selectedOperator) {
+    firstOperand = operandSelected
+  } else {
+    secondOperand = operandSelected
+  }
 }
 
 function enableButtons (buttonToBlock) {
@@ -235,7 +265,7 @@ function validateAllowedLenght () {
 
   if (resultString.length > MAX_DISPLAY_DIGIT_LENGTH) {
     result = result.toExponential(2)
-  } else if (resultString.length == MAX_DISPLAY_DIGIT_LENGTH) {
+  } else if (resultString.length >= MAX_DISPLAY_DIGIT_LENGTH) {
     changeCalculatorStatus('disableButton', 'numbers')
     changeCalculatorStatus('disableButton', 'zero_decimal')
     changeCalculatorStatus('disableButton', 'negative')
@@ -243,7 +273,7 @@ function validateAllowedLenght () {
 }
 
 function validateOperandLength (operand) {
-  if (operand.length == MAX_DISPLAY_DIGIT_LENGTH) {
+  if (operand.length >= MAX_DISPLAY_DIGIT_LENGTH) {
     changeCalculatorStatus('disableButton', 'numbers')
     changeCalculatorStatus('disableButton', 'zero_decimal')
     if (!isCurrentOperandNegative) {
