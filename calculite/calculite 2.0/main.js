@@ -5,11 +5,12 @@ let firstOperand = ''
 let secondOperand = ''
 let result = ''
 let isCurrentOperandNegative = false
-let operandSelected = ''
+let currentOperand = ''
 
 let domNumbersButtons
 let domOperatorsButtons
 let domZeroDecimalButtons
+let domEqualResetNegativeButtons
 
 // initialize calculite
 function initCalculator () {
@@ -182,7 +183,7 @@ function disableButtons (buttonToBlock) {
   })
 }
 
-function updateCurrentOperand() {
+function setCurrentOperand() {
   if (!selectedOperator) {
     firstOperand = operandSelected
   } else {
@@ -253,9 +254,9 @@ function calculateResult () {
 }
 
 function validateAllowedLenght () {
-  const firstOperandString = String(firstOperand) // se pasa a string para poder medir la largura
-  const secondOperandString = String(secondOperand)
-  const resultString = String(result)
+  let firstOperandString = String(firstOperand) // se pasa a string para poder medir la largura
+  let secondOperandString = String(secondOperand)
+  let resultString = String(result)
 
   if (!selectedOperator) {
     validateOperandLength(firstOperandString)
