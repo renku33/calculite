@@ -1,5 +1,5 @@
 // constantes
-const MAX_LENGTH_DIGIT_DISPLAY = 9
+const MAX_DISPLAY_DIGIT_LENGTH = 9
 
 // variables
 let firstOperand = 0
@@ -14,28 +14,23 @@ let maxDigit = false
 let isNegative = false
 let newNum = false
 
-
-
-function iniciarCalculadora(){
+function initCalculator(){
     domNumbersButtons = document.querySelectorAll('.numbers button')
     domOperatorsButtons = document.querySelectorAll('.operators button')
     domEqualButton = document.getElementById('equal')
     domResetButton = document.getElementById('reset')
     domNegativeButton = document.getElementById('toggleNegative')
-    domZeroButton = document.getElementById('zero')
+    domZeroButton = document.getElementById('0')
     domDecimalButton = document.getElementById('decimal')
 
-
-    // poner el display a 0
-    // deshabilitar todos los botones menos los numeros
-    // llamar funcion que pone los eventListeners 
+    addEventListeners()
 }
 
-function añadirLosEventListeners(){
+function addEventListeners(){
     domNumbersButtons.forEach(numberButton => {
         numberButton.addEventListener('click', () => storeNumberValue(numberButton.value))
     })
-    
+
     domOperatorsButtons.forEach(operatorButton => {
         operatorButton.addEventListener('click', () => storeOperatorValue(operatorButton.value))
     })
@@ -70,9 +65,11 @@ function storeOperatorValue(operatorValue){
 }
 
 function addZero(){
-    if (currentOperand != "") {
-        currentOperand += '0'
+    if (pendingReset) {
+        pendingReset = false
+        currentOperand = ''
     }
+    currentOperand += '0'
     // newNum = true
     updateCalculatorStatus()
 }
@@ -87,7 +84,8 @@ function addDecimalSeparator(){
 function hacerCalculo(){
     let result = calculateResult()
     result = formatResult(result)
-    // pendingResult = true
+    currentOperand = result
+
     updateCalculatorStatus()
 }
 
@@ -111,22 +109,22 @@ function toggleNegative(){
 function calculateResult() {
     let result
 
-    switch (selectedOperator) {
+    switch (operator) {
         case '+':
-            result = firstOperand + secondOperand
+            result = firstOperand + parseFloat(currentOperand)
             break
         case '-':
-            result = firstOperand - secondOperand
+            result = firstOperand - parseFloat(currentOperand)
             break
         case '/':
-            if (secondOperand == 0) {
+            if (parseFloat(currentOperand) == 0) {
                 result = 'error'
             } else {
-                result = firstOperand / secondOperand
+                result = firstOperand / parseFloat(currentOperand)
             }
             break
         case '*':
-            result = firstOperand * secondOperand
+            result = firstOperand * parseFloat(currentOperand)
             break
     }
 
@@ -143,7 +141,7 @@ function formatResult(result) {
 // -----------------------------------------------------------------------MAIN--------------------------------------------------------------
 
 function updateCalculatorStatus(){
-    document.getElementById('calculatorDisplay').value = currentOperand
+    document.getElementById('calculatorDisplay').value = String(currentOperand).replace('.', ',')
 
     // if(pendingResult){
     //     calcular(num1,num2)
