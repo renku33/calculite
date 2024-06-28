@@ -2,7 +2,8 @@
 const MAX_LENGTH_DIGIT_DISPLAY = 9
 
 // variables
-let current = ""
+let firstOperand = 0
+let currentOperand = ""
 let operator = ""
 
 // estados booleanos
@@ -16,84 +17,148 @@ let newNum = false
 
 
 function iniciarCalculadora(){
-    // cojer los botones del dom
+    domNumbersButtons = document.querySelectorAll('.numbers button')
+    domOperatorsButtons = document.querySelectorAll('.operators button')
+    domEqualButton = document.getElementById('equal')
+    domResetButton = document.getElementById('reset')
+    domNegativeButton = document.getElementById('toggleNegative')
+    domZeroButton = document.getElementById('zero')
+    domDecimalButton = document.getElementById('decimal')
+
+
     // poner el display a 0
     // deshabilitar todos los botones menos los numeros
     // llamar funcion que pone los eventListeners 
 }
 
 function añadirLosEventListeners(){
-    // añadir event listener a todos los botones
+    domNumbersButtons.forEach(numberButton => {
+        numberButton.addEventListener('click', () => storeNumberValue(numberButton.value))
+    })
+    
+    domOperatorsButtons.forEach(operatorButton => {
+        operatorButton.addEventListener('click', () => storeOperatorValue(operatorButton.value))
+    })
+
+    domZeroButton.addEventListener('click', () => addZero())
+
+    domDecimalButton.addEventListener('click', () => addDecimalSeparator())
+
+    domEqualButton.addEventListener('click', () => hacerCalculo())
+
+    domResetButton.addEventListener('click', () => resetCalculator())
+
+    domNegativeButton.addEventListener('click', () => toggleNegative())
 }
 
-function botonesNumeros(valorNum){
-    // current += valorNum
+function storeNumberValue(numberValue){
+    if (pendingReset) {
+        pendingReset = false
+        currentOperand = ''
+    }
+    currentOperand += numberValue
     // newNum = true
-    // updateCal()
+    updateCalculatorStatus()
 }
 
-function botonesOperadores(valorOp){
-    // operator = valorOp
+function storeOperatorValue(operatorValue){
+    operator = operatorValue
+    firstOperand = parseFloat(currentOperand)
+    pendingReset = true
     // operatorSelected = true
-    // updateCal()
+    updateCalculatorStatus()
 }
 
-function botonZero(valorZero){
-    // current += valorZero
+function addZero(){
+    if (currentOperand != "") {
+        currentOperand += '0'
+    }
     // newNum = true
-    // updateCal()
+    updateCalculatorStatus()
 }
 
-function botonComa(valorComa){
-    // current += valorComa
+function addDecimalSeparator(){
+    currentOperand = currentOperand.replace('.', '')
+    currentOperand += '.'
     // newNum = true
-    // updateCal()
+    updateCalculatorStatus()
 }
 
-function botonIgual(){
+function hacerCalculo(){
+    let result = calculateResult()
+    result = formatResult(result)
     // pendingResult = true
-    // updateCal()
+    updateCalculatorStatus()
 }
 
-function botonNegative(){
-    // isNegative = !isNegative
-    // updateCal()
-}
-
-function botonReset(){
+function resetCalculator(){
+    currentOperand = ""
+    operator = ""
     // pendingReset= true
-    // updateCal()
+    updateCalculatorStatus()
 }
 
+function toggleNegative(){
+    if(currentOperand.startsWith('-')) {
+        currentOperand.replace('-', '')
+    } else {
+        currentOperand = '-' + currentOperand
+    }
 
+    updateCalculatorStatus()
+}
+
+function calculateResult() {
+    let result
+
+    switch (selectedOperator) {
+        case '+':
+            result = firstOperand + secondOperand
+            break
+        case '-':
+            result = firstOperand - secondOperand
+            break
+        case '/':
+            if (secondOperand == 0) {
+                result = 'error'
+            } else {
+                result = firstOperand / secondOperand
+            }
+            break
+        case '*':
+            result = firstOperand * secondOperand
+            break
+    }
+
+    return result
+}
+
+function formatResult(result) {
+    let resultString = String(result)
+    if (resultString.length > MAX_DISPLAY_DIGIT_LENGTH) {
+        result = result.toExponential(2)
+    }
+    return result
+}
 // -----------------------------------------------------------------------MAIN--------------------------------------------------------------
 
-function updateCal(){
-    let num1
-    let num2
+function updateCalculatorStatus(){
+    document.getElementById('calculatorDisplay').value = currentOperand
 
-    if(newNum){
-        if(operatorSelected){
-            num2 = putCurrentIntoNum()
-        } else {
-            num1 = putCurrentIntoNum()
-        }
-    }
+    // if(pendingResult){
+    //     calcular(num1,num2)
+    // }
 
-    if(pendingResult){
-        calcular(num1,num2)
-    }
+    // if(isNegative){
+    //     if(operatorSelected){
+    //         toggleNegativePositive(num2)
+    //     } else {
+    //         toggleNegativePositive(num1)
+    //     }
+    // }
 
-    if(isNegative){
-        if(operatorSelected){
-            toggleNegativePositive(num2)
-        } else {
-            toggleNegativePositive(num1)
-        }
-    }
-
-    if(pendingReset){
-        reset()
-    }
+    // if(pendingReset){
+    //     reset()
+    // }
 }
 
