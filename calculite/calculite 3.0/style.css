@@ -12,7 +12,7 @@
             min-height: 100vh;
         }
 
-        .disabled {
+        .disabled-number-buttons {
             background: linear-gradient(to right, grey, rgb(221, 221, 221)) !important;
         }
 
@@ -134,4 +134,8 @@
         .button_igual {
             width: 112px;
             height: 112px;
+        }
+
+        .disabled-other-buttons {
+            opacity: .5;
         }
