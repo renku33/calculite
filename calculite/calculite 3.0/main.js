@@ -10,7 +10,7 @@ let currentOperand = ''
 let operator = ''
 
 // Declare Global Boolean Variables
-let pendingReset = false
+let pendingResetCurrentOperand = false
 let hasResult = false
 
 // Declare Global Dom Buttons
@@ -62,8 +62,8 @@ function addEventListeners () {
 
 // Storing functions
 function storeNumberValue (numberValue) {
-  if (pendingReset) {
-    pendingReset = false
+  if (pendingResetCurrentOperand) {
+    pendingResetCurrentOperand = false
     currentOperand = ''
   }
   currentOperand += numberValue
@@ -73,15 +73,15 @@ function storeNumberValue (numberValue) {
 function storeOperatorValue (operatorValue) {
   operator = operatorValue
   firstOperand = Number(currentOperand)
-  pendingReset = true
+  pendingResetCurrentOperand = true
   hasResult = false
   updateCalculatorStatus()
 }
 
 function addZero () {
   if (currentOperand.includes('.') || currentOperand != '') {
-    if (pendingReset) {
-      pendingReset = false
+    if (pendingResetCurrentOperand) {
+      pendingResetCurrentOperand = false
       currentOperand = ''
     }
     currentOperand += '0'
@@ -172,7 +172,7 @@ function updateCalculatorStatus () {
   }
 
   // Update Display
-  document.getElementById('calculatorDisplay').value = String(valueToDisplay).replace('.', ',')
+  updateDisplay(valueToDisplay)
 
   // Disable Buttons if needed
   if (currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH || hasResult) {
@@ -180,17 +180,22 @@ function updateCalculatorStatus () {
     if (Number(currentOperand) > 0 || hasResult) {
       disableToggleNegativeButton()
     }
-    // return
   } else { // Enable Buttons
     enableNumericButtons()
     enableToggleNegativeButton()
   }
-  // Enable buttons if operator doesn't exist
-  if (operator != '') {
+  // Enable buttons if operator doesn't exist and we are using the First Operand
+  if (operator != '' && String(firstOperand) == currentOperand) {
     enableNumericButtons()
     enableToggleNegativeButton()
   }
 }
+
+// Update Display
+function updateDisplay (valueToDisplay) {
+  document.getElementById('calculatorDisplay').value = String(valueToDisplay).replace('.', ',')
+}
+
 // Disable Functions
 function disableNumericButtons () {
   disableNumberButtons()
