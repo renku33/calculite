@@ -238,6 +238,7 @@ function enableNumberButtons () {
     button.classList.remove('disabled-number-buttons')
   })
 }
+
 function enableCommaButton () {
   domDecimalButton.removeAttribute('disabled')
   domDecimalButton.classList.remove('disabled-number-buttons')
