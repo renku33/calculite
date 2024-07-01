@@ -6,71 +6,74 @@
 // Constants
 const MAX_DISPLAY_DIGIT_LENGTH = 9
 
+let statusAAA
+
 // Status
 function initCalculatorStatus () {
-  let status = initializeStatus()
-  initCalculatorButtons(status)
+  statusAAA  = new calculatorStatus()
+  console.log(statusAAA)
+  initCalculatorButtons(statusAAA)
 }
 
-// Declare Global Variables
+// Declare Global Variables   
 let firstOperand = 0
 let currentOperand = ''
 let operator = ''
 
 // Update Value functions
-function updateDigitValue (numberValue, status) {
-  resetCurrentOperandAfterSelectedOperator(status)
+function updateDigitValue (numberValue, statusAAA) {
+  resetCurrentOperandAfterSelectedOperator(statusAAA)
   currentOperand += numberValue // This function uses String data type for the operand to avoid certain problems
-  checkStatusAndUpdateCalculator(status)
+  checkStatusAndUpdateCalculator(statusAAA)
 }
 
-function updateOperatorValue (operatorValue, status) {
+function updateOperatorValue (operatorValue, statusAAA) {
   operator = operatorValue
   firstOperand = Number(currentOperand)
-  status.checkStatusAndUpdateCalculator = true
-  status.hasResult = false
-  checkStatusAndUpdateCalculator(status)
+  statusAAA.checkStatusAndUpdateCalculator(true)
+  statusAAA.hasResult(false)
+  checkStatusAndUpdateCalculator(statusAAA)
 }
 
-function addZeroToCurrentNumber (status) {
+function addZeroToCurrentNumber (statusAAA) {
   if (currentOperand.includes('.') || currentOperand != '') {
-    resetCurrentOperandAfterSelectedOperator(status)
+    resetCurrentOperandAfterSelectedOperator(statusAAA)
     currentOperand += '0'
   }
-  checkStatusAndUpdateCalculator(status)
+  checkStatusAndUpdateCalculator(statusAAA)
 }
 
-function addDecimalToCurrentNumber (status) {
-  resetCurrentOperandAfterSelectedOperator(status)
+function addDecimalToCurrentNumber (statusAAA) {
+  resetCurrentOperandAfterSelectedOperator(statusAAA)
   currentOperand = currentOperand.replace('.', '')
   if (currentOperand == '') {
     currentOperand += '0'
   }
   currentOperand += '.'
-  checkStatusAndUpdateCalculator(status)
+  checkStatusAndUpdateCalculator(statusAAA)
 }
 
-function resolveOperation (status) {
+function resolveOperation (statusAAA) {
   if (operator) {
     let result = calculateResult()
     result = formatResult(result)
     currentOperand = result
-    status.hasResult = true
+    statusAAA.hasResult(true)
     operator = ''
   } else {
     resetCalculator()
   }
-  checkStatusAndUpdateCalculator(status)
+  checkStatusAndUpdateCalculator(statusAAA)
 }
 
-function resetCalculator (status) {
+function resetCalculator (statusAAA) {
   currentOperand = ''
   operator = ''
-  status.hasResult = false
-  checkStatusAndUpdateCalculator(status)
+  statusAAA.hasResult(false)
+  checkStatusAndUpdateCalculator(statusAAA)
 }
 
-function toggleNegative (status) {
+function toggleNegative (statusAAA) {
   if (Number(currentOperand) != 0) {
     if (currentOperand.startsWith('-')) {
       currentOperand = currentOperand.replace('-', '')
@@ -78,7 +81,7 @@ function toggleNegative (status) {
       currentOperand = '-' + currentOperand
     }
   }
-  checkStatusAndUpdateCalculator(status)
+  checkStatusAndUpdateCalculator(statusAAA)
 }
 
 function calculateResult () {
@@ -115,9 +118,9 @@ function formatResult (result) {
   return result
 }
 
-function resetCurrentOperandAfterSelectedOperator (status) {
-  if (status.pendingResetCurrentOperand) {
-    status.pendingResetCurrentOperand = false
+function resetCurrentOperandAfterSelectedOperator (statusAAA) {
+  if (statusAAA.pendingResetCurrentOperand) {
+    statusAAA.pendingResetCurrentOperand(false)
     currentOperand = ''
   }
 }
@@ -125,7 +128,7 @@ function resetCurrentOperandAfterSelectedOperator (status) {
 // --------------------------------------------------------------- MAIN --------------------------------------------------------------
 
 // Update Status
-function checkStatusAndUpdateCalculator (status) {
+function checkStatusAndUpdateCalculator (statusAAA) {
   let valueToDisplay = currentOperand
 
   if (valueToDisplay == '') {
@@ -136,9 +139,9 @@ function checkStatusAndUpdateCalculator (status) {
   updateDisplay(valueToDisplay)
 
   // Disable Buttons if needed
-  if (currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH || status.hasResult) {
+  if (currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH || statusAAA.hasResult) {
     disableNumericButtons()
-    if (Number(currentOperand) > 0 || status.hasResult) {
+    if (Number(currentOperand) > 0 || statusAAA.hasResult) {
       disableToggleNegativeButton()
     }
   } else { // Enable Buttons
@@ -147,10 +150,11 @@ function checkStatusAndUpdateCalculator (status) {
   }
 
   // Enable buttons if operator exists and the display hasn't been reset yet
-  if (operator && status.pendingResetCurrentOperand) {
+  if (operator && statusAAA.pendingResetCurrentOperand) {
     enableNumericButtons()
     disableToggleNegativeButton()
   }
+  console.log(statusAAA)
 }
 
 // Update Display
@@ -158,10 +162,10 @@ function updateDisplay (valueToDisplay) {
   document.getElementById('calculatorDisplay').value = String(valueToDisplay).replace('.', ',')
 }
 
-// Initialize Status
-function initializeStatus () {
-  return {
-    pendingResetCurrentOperand: false,
-    hasResult: false
-  }
-}
+// // Initialize Status
+// function initializeStatus () {
+//   return {
+//     pendingResetCurrentOperand: false,
+//     hasResult: false
+//   }
+// }

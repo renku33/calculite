@@ -2,41 +2,52 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 // eslint-disable-next-line no-unused-vars
-function initCalculatorButtons (status) {
-  gatherDomButtons(status)
+
+let domNumberButtons
+  let domOperatorsButtons
+  let domEqualButton 
+  let domResetButton
+  let domNegativeButton
+  let domZeroButton
+  let domDecimalButton 
+
+function initCalculatorButtons () {
+  gatherDomButtons()
+  addEventListeners()
+
 }
 
 // Gather Dom Buttons
-function gatherDomButtons (status) {
-  let domNumberButtons = document.querySelectorAll('.numbers button')
-  let domOperatorsButtons = document.querySelectorAll('.operators button')
-  let domEqualButton = document.getElementById('equal')
-  let domResetButton = document.getElementById('reset')
-  let domNegativeButton = document.getElementById('toggleNegative')
-  let domZeroButton = document.getElementById('0')
-  let domDecimalButton = document.getElementById('decimal')
+function gatherDomButtons () {
+  domNumberButtons = document.querySelectorAll('.numbers button')
+  domOperatorsButtons = document.querySelectorAll('.operators button')
+  domEqualButton = document.getElementById('equal')
+  domResetButton = document.getElementById('reset')
+  domNegativeButton = document.getElementById('toggleNegative')
+  domZeroButton = document.getElementById('0')
+  domDecimalButton = document.getElementById('decimal')
   addEventListeners(domNumberButtons, domOperatorsButtons, domEqualButton, domResetButton, domNegativeButton, domZeroButton, domDecimalButton, status)
 }
 
 // Add Event Listeners
-function addEventListeners (domNumberButtons, domOperatorsButtons, domEqualButton, domResetButton, domNegativeButton, domZeroButton, domDecimalButton, status) {
+function addEventListeners () {
   domNumberButtons.forEach(numberButton => {
-    numberButton.addEventListener('click', () => updateDigitValue(numberButton.value, status))
+    numberButton.addEventListener('click', () => updateDigitValue(numberButton.value))
   })
 
   domOperatorsButtons.forEach(operatorButton => {
-    operatorButton.addEventListener('click', () => updateOperatorValue(operatorButton.value, status))
+    operatorButton.addEventListener('click', () => updateOperatorValue(operatorButton.value))
   })
 
-  domZeroButton.addEventListener('click', () => addZeroToCurrentNumber(status))
+  domZeroButton.addEventListener('click', () => addZeroToCurrentNumber())
 
-  domDecimalButton.addEventListener('click', () => addDecimalToCurrentNumber(status))
+  domDecimalButton.addEventListener('click', () => addDecimalToCurrentNumber())
 
-  domEqualButton.addEventListener('click', () => resolveOperation(status))
+  domEqualButton.addEventListener('click', () => resolveOperation())
 
-  domResetButton.addEventListener('click', () => resetCalculator(status))
+  domResetButton.addEventListener('click', () => resetCalculator())
 
-  domNegativeButton.addEventListener('click', () => toggleNegative(status))
+  domNegativeButton.addEventListener('click', () => toggleNegative())
 }
 
 // Disable Functions
