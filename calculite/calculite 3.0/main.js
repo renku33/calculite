@@ -1,119 +1,76 @@
+/* eslint-disable prefer-const */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 /* eslint-disable eqeqeq */
 
 // Constants
 const MAX_DISPLAY_DIGIT_LENGTH = 9
+
+// Status
+function initCalculatorStatus () {
+  let status = initializeStatus()
+  initCalculatorButtons(status)
+}
 
 // Declare Global Variables
 let firstOperand = 0
 let currentOperand = ''
 let operator = ''
 
-// Declare Global Boolean Variables
-let pendingResetCurrentOperand = false
-let hasResult = false
-
-// Declare Global Dom Buttons
-let domNumberButtons
-let domOperatorsButtons
-let domEqualButton
-let domResetButton
-let domNegativeButton
-let domZeroButton
-let domDecimalButton
-
-// Init Calculator
-// eslint-disable-next-line no-unused-vars
-function initCalculator () {
-  gatherDomButtons()
-  addEventListeners()
+// Update Value functions
+function updateDigitValue (numberValue, status) {
+  resetCurrentOperandAfterSelectedOperator(status)
+  currentOperand += numberValue // This function uses String data type for the operand to avoid certain problems
+  checkStatusAndUpdateCalculator(status)
 }
 
-// Gather Dom Buttons
-function gatherDomButtons () {
-  domNumberButtons = document.querySelectorAll('.numbers button')
-  domOperatorsButtons = document.querySelectorAll('.operators button')
-  domEqualButton = document.getElementById('equal')
-  domResetButton = document.getElementById('reset')
-  domNegativeButton = document.getElementById('toggleNegative')
-  domZeroButton = document.getElementById('0')
-  domDecimalButton = document.getElementById('decimal')
-}
-
-// Add Event Listeners
-function addEventListeners () {
-  domNumberButtons.forEach(numberButton => {
-    numberButton.addEventListener('click', () => updateDigitValue(numberButton.value))
-  })
-
-  domOperatorsButtons.forEach(operatorButton => {
-    operatorButton.addEventListener('click', () => updateOperatorValue(operatorButton.value))
-  })
-
-  domZeroButton.addEventListener('click', () => addZeroToCurrentNumber())
-
-  domDecimalButton.addEventListener('click', () => addDecimalToCurrentNumber())
-
-  domEqualButton.addEventListener('click', () => resolveOperation())
-
-  domResetButton.addEventListener('click', () => resetCalculator())
-
-  domNegativeButton.addEventListener('click', () => toggleNegative())
-}
-
-// Storing functions
-function updateDigitValue (numberValue) {
-  resetCurrentOperandAfterSelectedOperator()
-  currentOperand += numberValue
-  checkStatusAndUpdateCalculator()
-}
-
-function updateOperatorValue (operatorValue) {
+function updateOperatorValue (operatorValue, status) {
   operator = operatorValue
   firstOperand = Number(currentOperand)
-  pendingResetCurrentOperand = true
-  hasResult = false
-  checkStatusAndUpdateCalculator()
+  status.checkStatusAndUpdateCalculator = true
+  status.hasResult = false
+  checkStatusAndUpdateCalculator(status)
 }
 
-function addZeroToCurrentNumber () {
+function addZeroToCurrentNumber (status) {
   if (currentOperand.includes('.') || currentOperand != '') {
-    resetCurrentOperandAfterSelectedOperator()
+    resetCurrentOperandAfterSelectedOperator(status)
     currentOperand += '0'
   }
-  checkStatusAndUpdateCalculator()
+  checkStatusAndUpdateCalculator(status)
 }
 
-function addDecimalToCurrentNumber () {
-  resetCurrentOperandAfterSelectedOperator()
+function addDecimalToCurrentNumber (status) {
+  resetCurrentOperandAfterSelectedOperator(status)
   currentOperand = currentOperand.replace('.', '')
   if (currentOperand == '') {
     currentOperand += '0'
   }
   currentOperand += '.'
-  checkStatusAndUpdateCalculator()
+  checkStatusAndUpdateCalculator(status)
 }
 
-function resolveOperation () {
+function resolveOperation (status) {
   if (operator) {
     let result = calculateResult()
     result = formatResult(result)
     currentOperand = result
-    hasResult = true
+    status.hasResult = true
     operator = ''
   } else {
     resetCalculator()
   }
-  checkStatusAndUpdateCalculator()
+  checkStatusAndUpdateCalculator(status)
 }
 
-function resetCalculator () {
+function resetCalculator (status) {
   currentOperand = ''
   operator = ''
-  hasResult = false
-  checkStatusAndUpdateCalculator()
+  status.hasResult = false
+  checkStatusAndUpdateCalculator(status)
 }
 
-function toggleNegative () {
+function toggleNegative (status) {
   if (Number(currentOperand) != 0) {
     if (currentOperand.startsWith('-')) {
       currentOperand = currentOperand.replace('-', '')
@@ -121,7 +78,7 @@ function toggleNegative () {
       currentOperand = '-' + currentOperand
     }
   }
-  checkStatusAndUpdateCalculator()
+  checkStatusAndUpdateCalculator(status)
 }
 
 function calculateResult () {
@@ -158,9 +115,9 @@ function formatResult (result) {
   return result
 }
 
-function resetCurrentOperandAfterSelectedOperator () {
-  if (pendingResetCurrentOperand) {
-    pendingResetCurrentOperand = false
+function resetCurrentOperandAfterSelectedOperator (status) {
+  if (status.pendingResetCurrentOperand) {
+    status.pendingResetCurrentOperand = false
     currentOperand = ''
   }
 }
@@ -168,7 +125,7 @@ function resetCurrentOperandAfterSelectedOperator () {
 // --------------------------------------------------------------- MAIN --------------------------------------------------------------
 
 // Update Status
-function checkStatusAndUpdateCalculator () {
+function checkStatusAndUpdateCalculator (status) {
   let valueToDisplay = currentOperand
 
   if (valueToDisplay == '') {
@@ -179,9 +136,9 @@ function checkStatusAndUpdateCalculator () {
   updateDisplay(valueToDisplay)
 
   // Disable Buttons if needed
-  if (currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH || hasResult) {
+  if (currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH || status.hasResult) {
     disableNumericButtons()
-    if (Number(currentOperand) > 0 || hasResult) {
+    if (Number(currentOperand) > 0 || status.hasResult) {
       disableToggleNegativeButton()
     }
   } else { // Enable Buttons
@@ -190,7 +147,7 @@ function checkStatusAndUpdateCalculator () {
   }
 
   // Enable buttons if operator exists and the display hasn't been reset yet
-  if (operator && pendingResetCurrentOperand) {
+  if (operator && status.pendingResetCurrentOperand) {
     enableNumericButtons()
     disableToggleNegativeButton()
   }
@@ -201,60 +158,10 @@ function updateDisplay (valueToDisplay) {
   document.getElementById('calculatorDisplay').value = String(valueToDisplay).replace('.', ',')
 }
 
-// Disable Functions
-function disableNumericButtons () {
-  disableNumberButtons()
-  disableCommaButton()
-  disableZeroButton()
-}
-
-function disableNumberButtons () {
-  domNumberButtons.forEach(button => {
-    button.setAttribute('disabled', '')
-    button.classList.add('disabled-number-buttons')
-  })
-}
-
-function disableCommaButton () {
-  domDecimalButton.setAttribute('disabled', '')
-  domDecimalButton.classList.add('disabled-number-buttons')
-}
-
-function disableZeroButton () {
-  domZeroButton.setAttribute('disabled', '')
-  domZeroButton.classList.add('disabled-number-buttons')
-}
-
-function disableToggleNegativeButton () {
-  domNegativeButton.setAttribute('disabled', '')
-  domNegativeButton.classList.add('disabled-other-buttons')
-}
-
-// Enable Functions
-function enableNumericButtons () {
-  enableNumberButtons()
-  enableCommaButton()
-  enableZeroButton()
-}
-
-function enableNumberButtons () {
-  domNumberButtons.forEach(button => {
-    button.removeAttribute('disabled')
-    button.classList.remove('disabled-number-buttons')
-  })
-}
-
-function enableCommaButton () {
-  domDecimalButton.removeAttribute('disabled')
-  domDecimalButton.classList.remove('disabled-number-buttons')
-}
-
-function enableZeroButton () {
-  domZeroButton.removeAttribute('disabled')
-  domZeroButton.classList.remove('disabled-number-buttons')
-}
-
-function enableToggleNegativeButton () {
-  domNegativeButton.removeAttribute('disabled')
-  domNegativeButton.classList.remove('disabled-other-buttons')
+// Initialize Status
+function initializeStatus () {
+  return {
+    pendingResetCurrentOperand: false,
+    hasResult: false
+  }
 }
