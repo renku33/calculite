@@ -42,18 +42,18 @@ function gatherDomButtons () {
 // Add Event Listeners
 function addEventListeners () {
   domNumberButtons.forEach(numberButton => {
-    numberButton.addEventListener('click', () => storeNumberValue(numberButton.value))
+    numberButton.addEventListener('click', () => updateDigitValue(numberButton.value))
   })
 
   domOperatorsButtons.forEach(operatorButton => {
-    operatorButton.addEventListener('click', () => storeOperatorValue(operatorButton.value))
+    operatorButton.addEventListener('click', () => updateOperatorValue(operatorButton.value))
   })
 
-  domZeroButton.addEventListener('click', () => addZero())
+  domZeroButton.addEventListener('click', () => addZeroToCurrentNumber())
 
-  domDecimalButton.addEventListener('click', () => addDecimalSeparator())
+  domDecimalButton.addEventListener('click', () => addDecimalToCurrentNumber())
 
-  domEqualButton.addEventListener('click', () => executeEqualButton())
+  domEqualButton.addEventListener('click', () => resolveOperation())
 
   domResetButton.addEventListener('click', () => resetCalculator())
 
@@ -61,13 +61,13 @@ function addEventListeners () {
 }
 
 // Storing functions
-function storeNumberValue (numberValue) {
+function updateDigitValue (numberValue) {
   resetCurrentOperandAfterSelectedOperator()
   currentOperand += numberValue
   checkStatusAndUpdateCalculator()
 }
 
-function storeOperatorValue (operatorValue) {
+function updateOperatorValue (operatorValue) {
   operator = operatorValue
   firstOperand = Number(currentOperand)
   pendingResetCurrentOperand = true
@@ -75,7 +75,7 @@ function storeOperatorValue (operatorValue) {
   checkStatusAndUpdateCalculator()
 }
 
-function addZero () {
+function addZeroToCurrentNumber () {
   if (currentOperand.includes('.') || currentOperand != '') {
     resetCurrentOperandAfterSelectedOperator()
     currentOperand += '0'
@@ -83,7 +83,7 @@ function addZero () {
   checkStatusAndUpdateCalculator()
 }
 
-function addDecimalSeparator () {
+function addDecimalToCurrentNumber () {
   resetCurrentOperandAfterSelectedOperator()
   currentOperand = currentOperand.replace('.', '')
   if (currentOperand == '') {
@@ -93,7 +93,7 @@ function addDecimalSeparator () {
   checkStatusAndUpdateCalculator()
 }
 
-function executeEqualButton () {
+function resolveOperation () {
   if (operator) {
     let result = calculateResult()
     result = formatResult(result)
@@ -149,7 +149,8 @@ function calculateResult () {
 }
 
 function formatResult (result) {
-  const resultString = String(result)
+  // eslint-disable-next-line prefer-const
+  let resultString = String(result)
 
   if (resultString.length > MAX_DISPLAY_DIGIT_LENGTH) {
     result = result.toExponential(2)
@@ -189,7 +190,7 @@ function checkStatusAndUpdateCalculator () {
   }
 
   // Enable buttons if operator exists and the display hasn't been reset yet
-  if (operator != '' && pendingResetCurrentOperand) {
+  if (operator && pendingResetCurrentOperand) {
     enableNumericButtons()
     disableToggleNegativeButton()
   }
