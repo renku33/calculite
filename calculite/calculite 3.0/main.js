@@ -189,7 +189,7 @@ function updateCalculatorStatus () {
   // Enable buttons if operator exists and the display hasn't been reset yet
   if (operator != '' && pendingResetCurrentOperand) {
     enableNumericButtons()
-    enableToggleNegativeButton()
+    disableToggleNegativeButton()
   }
 }
 
