@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable eqeqeq */
+
 // Constants
 const MAX_DISPLAY_DIGIT_LENGTH = 9
 
@@ -21,10 +22,12 @@ let domNegativeButton
 let domZeroButton
 let domDecimalButton
 
+// Init Calculator
 function initCalculator () {
   gatherDomButtons()
   addEventListeners()
 }
+
 // Gather Dom Buttons
 function gatherDomButtons () {
   domNumberButtons = document.querySelectorAll('.numbers button')
@@ -35,6 +38,7 @@ function gatherDomButtons () {
   domZeroButton = document.getElementById('0')
   domDecimalButton = document.getElementById('decimal')
 }
+
 // Add Event Listeners
 function addEventListeners () {
   domNumberButtons.forEach(numberButton => {
@@ -56,6 +60,7 @@ function addEventListeners () {
   domNegativeButton.addEventListener('click', () => toggleNegative())
 }
 
+// Storing functions
 function storeNumberValue (numberValue) {
   if (pendingReset) {
     pendingReset = false
@@ -162,10 +167,10 @@ function formatResult (result) {
 function updateCalculatorStatus () {
   let valueToDisplay = currentOperand
 
-  // eslint-disable-next-line eqeqeq
   if (valueToDisplay == '') {
     valueToDisplay = 0
   }
+
   // Update Display
   document.getElementById('calculatorDisplay').value = String(valueToDisplay).replace('.', ',')
 
