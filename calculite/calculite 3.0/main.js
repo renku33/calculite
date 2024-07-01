@@ -1,16 +1,18 @@
-// Constantes
+/* eslint-disable no-unused-vars */
+/* eslint-disable eqeqeq */
+// Constants
 const MAX_DISPLAY_DIGIT_LENGTH = 9
 
-// Variables
+// Declare Global Variables
 let firstOperand = 0
 let currentOperand = ''
 let operator = ''
 
-// Booleans
+// Declare Global Boolean Variables
 let pendingReset = false
 let hasResult = false
 
-// Buttons
+// Declare Global Dom Buttons
 let domNumberButtons
 let domOperatorsButtons
 let domEqualButton
@@ -20,6 +22,11 @@ let domZeroButton
 let domDecimalButton
 
 function initCalculator () {
+  gatherDomButtons()
+  addEventListeners()
+}
+// Gather Dom Buttons
+function gatherDomButtons () {
   domNumberButtons = document.querySelectorAll('.numbers button')
   domOperatorsButtons = document.querySelectorAll('.operators button')
   domEqualButton = document.getElementById('equal')
@@ -27,10 +34,8 @@ function initCalculator () {
   domNegativeButton = document.getElementById('toggleNegative')
   domZeroButton = document.getElementById('0')
   domDecimalButton = document.getElementById('decimal')
-
-  addEventListeners()
 }
-
+// Add Event Listeners
 function addEventListeners () {
   domNumberButtons.forEach(numberButton => {
     numberButton.addEventListener('click', () => storeNumberValue(numberButton.value))
@@ -44,7 +49,7 @@ function addEventListeners () {
 
   domDecimalButton.addEventListener('click', () => addDecimalSeparator())
 
-  domEqualButton.addEventListener('click', () => hacerCalculo())
+  domEqualButton.addEventListener('click', () => executeEqualButton())
 
   domResetButton.addEventListener('click', () => resetCalculator())
 
@@ -88,7 +93,7 @@ function addDecimalSeparator () {
   updateCalculatorStatus()
 }
 
-function hacerCalculo () {
+function executeEqualButton () {
   if (operator) {
     let result = calculateResult()
     result = formatResult(result)
@@ -141,12 +146,11 @@ function calculateResult () {
       result = firstOperand * Number(currentOperand)
       break
   }
-
   return result
 }
 
 function formatResult (result) {
-  let resultString = String(result)
+  const resultString = String(result)
 
   if (resultString.length > MAX_DISPLAY_DIGIT_LENGTH) {
     result = result.toExponential(2)
@@ -154,30 +158,39 @@ function formatResult (result) {
   return result
 }
 // -----------------------------------------------------------------------MAIN--------------------------------------------------------------
-
+// Update Status
 function updateCalculatorStatus () {
   let valueToDisplay = currentOperand
 
+  // eslint-disable-next-line eqeqeq
   if (valueToDisplay == '') {
     valueToDisplay = 0
   }
+  // Update Display
   document.getElementById('calculatorDisplay').value = String(valueToDisplay).replace('.', ',')
 
+  // Disable Buttons if needed
   if (currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH || hasResult) {
     disableNumericButtons()
     if (Number(currentOperand) > 0 || hasResult) {
       disableToggleNegativeButton()
     }
-    return
-  } else {
+    // return
+  } else { // Enable Buttons
     enableNumericButtons()
     enableToggleNegativeButton()
   }
-
+  // Enable buttons if operator doesn't exist
   if (operator != '') {
     enableNumericButtons()
     enableToggleNegativeButton()
   }
+}
+// Disable Functions
+function disableNumericButtons () {
+  disableNumberButtons()
+  disableCommaButton()
+  disableZeroButton()
 }
 
 function disableNumberButtons () {
@@ -202,13 +215,19 @@ function disableToggleNegativeButton () {
   domNegativeButton.classList.add('disabled-other-buttons')
 }
 
+// Enable Functions
+function enableNumericButtons () {
+  enableNumberButtons()
+  enableCommaButton()
+  enableZeroButton()
+}
+
 function enableNumberButtons () {
   domNumberButtons.forEach(button => {
     button.removeAttribute('disabled')
     button.classList.remove('disabled-number-buttons')
   })
 }
-
 function enableCommaButton () {
   domDecimalButton.removeAttribute('disabled')
   domDecimalButton.classList.remove('disabled-number-buttons')
@@ -222,16 +241,4 @@ function enableZeroButton () {
 function enableToggleNegativeButton () {
   domNegativeButton.removeAttribute('disabled')
   domNegativeButton.classList.remove('disabled-other-buttons')
-}
-
-function disableNumericButtons () {
-  disableNumberButtons()
-  disableCommaButton()
-  disableZeroButton()
-}
-
-function enableNumericButtons () {
-  enableNumberButtons()
-  enableCommaButton()
-  enableZeroButton()
 }

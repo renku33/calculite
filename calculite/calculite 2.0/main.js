@@ -15,39 +15,41 @@ let domEqualResetNegativeButtons
 // hacer clipboard
 
 // initialize calculite
+// eslint-disable-next-line no-unused-vars
 function initCalculator () {
+  gatherDomElements()
+  addEventListenersToDomButtons()
+  changeCalculatorStatus('disableButton', 'operators')
+}
+// Gather dom elements
+function gatherDomElements () {
   domNumbersButtons = document.querySelectorAll('.numbers button')
   domOperatorsButtons = document.querySelectorAll('.operators button')
   domEqualResetNegativeButtons = document.querySelectorAll('.equal_negative_reset button')
   domZeroDecimalButtons = document.querySelectorAll('.zero_decimal button')
-
+}
+// add event listeners to our calculator
+function addEventListenersToDomButtons () {
   addEventListenersToDomNumberButtons()
+  addEventListenersToDomZeroDecimalButtons()
   addEventListenersToDomOperatorButtons()
   addEventListenersToDomEqualResetNegativeButtons()
-  addEventListenersToDomZeroDecimalButtons()
-  changeCalculatorStatus('disableButton', 'operators')
 }
-
-// add event listeners to our calculator
-
 function addEventListenersToDomNumberButtons () {
   domNumbersButtons.forEach(numberButton => {
     numberButton.addEventListener('click', () => storeNumberValue(numberButton.value))
   })
 }
-
 function addEventListenersToDomZeroDecimalButtons () {
   domZeroDecimalButtons.forEach(button => {
     button.addEventListener('click', () => storeZeroDecimalValue(button.value))
   })
 }
-
 function addEventListenersToDomOperatorButtons () {
   domOperatorsButtons.forEach(operatorButton => {
     operatorButton.addEventListener('click', () => storeOperatorValue(operatorButton.value))
   })
 }
-
 function addEventListenersToDomEqualResetNegativeButtons () {
   domEqualResetNegativeButtons.forEach(button => {
     button.addEventListener('click', () => equalResetNegativeFunctions(button.value))
@@ -55,6 +57,17 @@ function addEventListenersToDomEqualResetNegativeButtons () {
 }
 
 // storing functions
+function storeNumberValue (numberButtonValue) {
+  let tempStringValue
+
+  tempStringValue = String(currentOperand) + numberButtonValue // se pasa a string para poder concatenar
+  currentOperand = parseFloat(tempStringValue)
+  changeCalculatorStatus('updateDisplay', currentOperand)
+
+  setCurrentOperand()
+  validateAllowedLenght()
+  changeCalculatorStatus('enableButton', 'operators')
+}
 
 function storeOperatorValue (operatorButtonValue) {
   selectedOperator = operatorButtonValue
@@ -64,22 +77,10 @@ function storeOperatorValue (operatorButtonValue) {
   currentOperand = ''
 }
 
-function storeNumberValue (numberButtonValue) {
-  let tempStringValue
-
-  tempStringValue = String(currentOperand) + numberButtonValue // se pasa a string para poder concatenar
-  currentOperand = parseFloat(tempStringValue)
-  changeCalculatorStatus('updateDisplay', currentOperand)
-  
-  setCurrentOperand()
-  validateAllowedLenght()
-  changeCalculatorStatus('enableButton', 'operators')
-}
-
 function equalResetNegativeFunctions (equalResetNegativeValue) {
   switch (equalResetNegativeValue) {
     case '=':
-      let operationIsPossible = validateOperation()
+      const operationIsPossible = validateOperation()
       if (operationIsPossible) {
         result = calculateResult()
         resetCalculator() // resetea el secondOperator
@@ -117,12 +118,12 @@ function storeZeroDecimalValue (ZeroDecimalValue) {
       // la meto en la posicion 9
       if (!currentOperand) {
         currentOperand = '0.'
-      } 
-      
+      }
+
       currentOperand = String(currentOperand)
       currentOperand = currentOperand.replace('.', '')
       currentOperand = currentOperand + ZeroDecimalValue // se pasa a string para poder concatenar
-      
+
       setCurrentOperand()
       changeCalculatorStatus('updateDisplay', currentOperand)
       changeCalculatorStatus('disableButton', 'operators')
@@ -160,14 +161,14 @@ function changeCalculatorStatus (optionState, parameterToTransfer) {
 
 // logica calculite
 function disableButtons (buttonToBlock) {
-  let buttons = document.querySelectorAll(`.${buttonToBlock} button`)
+  const buttons = document.querySelectorAll(`.${buttonToBlock} button`)
 
   buttons.forEach(function (button) {
     button.disabled = true
   })
 }
 
-function setCurrentOperand() {
+function setCurrentOperand () {
   if (!selectedOperator) {
     firstOperand = currentOperand
   } else {
@@ -176,7 +177,7 @@ function setCurrentOperand() {
 }
 
 function enableButtons (buttonToBlock) {
-  let buttons = document.querySelectorAll(`.${buttonToBlock} button`)
+  const buttons = document.querySelectorAll(`.${buttonToBlock} button`)
 
   buttons.forEach(function (button) {
     button.disabled = false
@@ -195,7 +196,6 @@ function resetCalculator () {
 }
 
 function toggleNegativePositive () {
-  
   currentOperand = currentOperand * (-1)
   changeCalculatorStatus('updateDisplay', currentOperand)
   setCurrentOperand()
@@ -236,8 +236,8 @@ function calculateResult () {
 }
 
 function validateAllowedLenght () {
-  let currentOperandString = String(currentOperand) // se pasa a string para poder medir la largura
-  let resultString = String(result)
+  const currentOperandString = String(currentOperand) // se pasa a string para poder medir la largura
+  const resultString = String(result)
 
   validateOperandLength(currentOperandString)
 
