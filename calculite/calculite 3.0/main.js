@@ -186,8 +186,8 @@ function updateCalculatorStatus () {
     enableNumericButtons()
     enableToggleNegativeButton()
   }
-  // Enable buttons if operator exists and we are using the First Operand
-  if (operator != '' && String(firstOperand) == currentOperand) {
+  // Enable buttons if operator exists and the display hasn't been reset yet
+  if (operator != '' && pendingResetCurrentOperand) {
     enableNumericButtons()
     enableToggleNegativeButton()
   }
