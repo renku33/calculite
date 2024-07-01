@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable eqeqeq */
 
 // Constants
@@ -23,6 +22,7 @@ let domZeroButton
 let domDecimalButton
 
 // Init Calculator
+// eslint-disable-next-line no-unused-vars
 function initCalculator () {
   gatherDomButtons()
   addEventListeners()
@@ -162,7 +162,9 @@ function formatResult (result) {
   }
   return result
 }
-// -----------------------------------------------------------------------MAIN--------------------------------------------------------------
+
+// --------------------------------------------------------------- MAIN --------------------------------------------------------------
+
 // Update Status
 function updateCalculatorStatus () {
   let valueToDisplay = currentOperand
@@ -184,7 +186,7 @@ function updateCalculatorStatus () {
     enableNumericButtons()
     enableToggleNegativeButton()
   }
-  // Enable buttons if operator doesn't exist and we are using the First Operand
+  // Enable buttons if operator exists and we are using the First Operand
   if (operator != '' && String(firstOperand) == currentOperand) {
     enableNumericButtons()
     enableToggleNegativeButton()
