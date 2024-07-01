@@ -62,12 +62,9 @@ function addEventListeners () {
 
 // Storing functions
 function storeNumberValue (numberValue) {
-  if (pendingResetCurrentOperand) {
-    pendingResetCurrentOperand = false
-    currentOperand = ''
-  }
+  resetCurrentOperandAfterSelectedOperator()
   currentOperand += numberValue
-  updateCalculatorStatus()
+  checkStatusAndUpdateCalculator()
 }
 
 function storeOperatorValue (operatorValue) {
@@ -75,27 +72,25 @@ function storeOperatorValue (operatorValue) {
   firstOperand = Number(currentOperand)
   pendingResetCurrentOperand = true
   hasResult = false
-  updateCalculatorStatus()
+  checkStatusAndUpdateCalculator()
 }
 
 function addZero () {
   if (currentOperand.includes('.') || currentOperand != '') {
-    if (pendingResetCurrentOperand) {
-      pendingResetCurrentOperand = false
-      currentOperand = ''
-    }
+    resetCurrentOperandAfterSelectedOperator()
     currentOperand += '0'
   }
-  updateCalculatorStatus()
+  checkStatusAndUpdateCalculator()
 }
 
 function addDecimalSeparator () {
+  resetCurrentOperandAfterSelectedOperator()
   currentOperand = currentOperand.replace('.', '')
   if (currentOperand == '') {
     currentOperand += '0'
   }
   currentOperand += '.'
-  updateCalculatorStatus()
+  checkStatusAndUpdateCalculator()
 }
 
 function executeEqualButton () {
@@ -108,15 +103,14 @@ function executeEqualButton () {
   } else {
     resetCalculator()
   }
-
-  updateCalculatorStatus()
+  checkStatusAndUpdateCalculator()
 }
 
 function resetCalculator () {
   currentOperand = ''
   operator = ''
   hasResult = false
-  updateCalculatorStatus()
+  checkStatusAndUpdateCalculator()
 }
 
 function toggleNegative () {
@@ -127,7 +121,7 @@ function toggleNegative () {
       currentOperand = '-' + currentOperand
     }
   }
-  updateCalculatorStatus()
+  checkStatusAndUpdateCalculator()
 }
 
 function calculateResult () {
@@ -163,10 +157,17 @@ function formatResult (result) {
   return result
 }
 
+function resetCurrentOperandAfterSelectedOperator () {
+  if (pendingResetCurrentOperand) {
+    pendingResetCurrentOperand = false
+    currentOperand = ''
+  }
+}
+
 // --------------------------------------------------------------- MAIN --------------------------------------------------------------
 
 // Update Status
-function updateCalculatorStatus () {
+function checkStatusAndUpdateCalculator () {
   let valueToDisplay = currentOperand
 
   if (valueToDisplay == '') {
@@ -186,6 +187,7 @@ function updateCalculatorStatus () {
     enableNumericButtons()
     enableToggleNegativeButton()
   }
+
   // Enable buttons if operator exists and the display hasn't been reset yet
   if (operator != '' && pendingResetCurrentOperand) {
     enableNumericButtons()
