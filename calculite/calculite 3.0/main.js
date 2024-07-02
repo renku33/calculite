@@ -1,171 +1,122 @@
-/* eslint-disable prefer-const */
-/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-/* eslint-disable eqeqeq */
+/* eslint-disable no-undef */
+document.addEventListener('DOMContentLoaded', initCalculator)
 
-// Constants
 const MAX_DISPLAY_DIGIT_LENGTH = 9
 
-let statusAAA
-
-// Status
-function initCalculatorStatus () {
-  statusAAA  = new calculatorStatus()
-  console.log(statusAAA)
-  initCalculatorButtons(statusAAA)
-}
-
-// Declare Global Variables   
+let calculatorStatus
 let firstOperand = 0
-let currentOperand = ''
+let currentOperand = '' // we build the operands as strings to avoid the loss of trailing zeros when using a number
 let operator = ''
 
-// Update Value functions
-function updateDigitValue (numberValue, statusAAA) {
-  resetCurrentOperandAfterSelectedOperator(statusAAA)
-  currentOperand += numberValue // This function uses String data type for the operand to avoid certain problems
-  checkStatusAndUpdateCalculator(statusAAA)
+function initCalculator () {
+  calculatorStatus = new CalculatorStatus()
+  initCalculatorButtons()
+  updateDisplay(0)
 }
 
-function updateOperatorValue (operatorValue, statusAAA) {
+function addDigitToCurrentOperand (numberValue) {
+  resetCurrentOperandAfterOperator()
+  currentOperand += numberValue
+  updateCalculatorStatus()
+}
+
+function setOperator (operatorValue) {
   operator = operatorValue
   firstOperand = Number(currentOperand)
-  statusAAA.checkStatusAndUpdateCalculator(true)
-  statusAAA.hasResult(false)
-  checkStatusAndUpdateCalculator(statusAAA)
+  calculatorStatus.setPendingResetCurrentOperand(true)
+  calculatorStatus.setHasResult(false)
+  updateCalculatorStatus()
 }
 
-function addZeroToCurrentNumber (statusAAA) {
-  if (currentOperand.includes('.') || currentOperand != '') {
-    resetCurrentOperandAfterSelectedOperator(statusAAA)
+function addZeroToCurrentOperand () {
+  resetCurrentOperandAfterOperator()
+  if (currentOperand.includes('.') || currentOperand !== '') {
     currentOperand += '0'
   }
-  checkStatusAndUpdateCalculator(statusAAA)
+  updateCalculatorStatus()
 }
 
-function addDecimalToCurrentNumber (statusAAA) {
-  resetCurrentOperandAfterSelectedOperator(statusAAA)
+function addDecimalToCurrentOperand () {
+  resetCurrentOperandAfterOperator()
   currentOperand = currentOperand.replace('.', '')
-  if (currentOperand == '') {
-    currentOperand += '0'
-  }
-  currentOperand += '.'
-  checkStatusAndUpdateCalculator(statusAAA)
+  currentOperand += currentOperand === '' ? '0.' : '.'
+  updateCalculatorStatus()
 }
 
-function resolveOperation (statusAAA) {
+function resolveOperation () {
   if (operator) {
-    let result = calculateResult()
-    result = formatResult(result)
-    currentOperand = result
-    statusAAA.hasResult(true)
+    const result = calculateResult(firstOperand, currentOperand) // currentOperand is used as the 2nd operand
+    currentOperand = formatResult(result) // we assign result to currentOperand to display the number
+    calculatorStatus.setHasResult(true)
     operator = ''
   } else {
     resetCalculator()
   }
-  checkStatusAndUpdateCalculator(statusAAA)
+  updateCalculatorStatus()
 }
 
-function resetCalculator (statusAAA) {
+function resetCalculator () {
   currentOperand = ''
   operator = ''
-  statusAAA.hasResult(false)
-  checkStatusAndUpdateCalculator(statusAAA)
+  calculatorStatus.reset()
+  updateCalculatorStatus()
 }
 
-function toggleNegative (statusAAA) {
-  if (Number(currentOperand) != 0) {
-    if (currentOperand.startsWith('-')) {
-      currentOperand = currentOperand.replace('-', '')
-    } else {
-      currentOperand = '-' + currentOperand
-    }
+function toggleNegative () {
+  if (currentOperand !== '' && currentOperand !== '0') {
+    currentOperand = currentOperand.startsWith('-') ? currentOperand.replace('-', '') : '-' + currentOperand
   }
-  checkStatusAndUpdateCalculator(statusAAA)
+  updateCalculatorStatus()
 }
 
-function calculateResult () {
-  let result
-
+function calculateResult (firstOperand, currentOperand) {
   switch (operator) {
     case '+':
-      result = firstOperand + Number(currentOperand)
-      break
+      return firstOperand + Number(currentOperand)
     case '-':
-      result = firstOperand - Number(currentOperand)
-      break
-    case '/':
-      if (Number(currentOperand) == 0) {
-        result = 'error'
-      } else {
-        result = firstOperand / Number(currentOperand)
-      }
-      break
+      return firstOperand - Number(currentOperand)
     case '*':
-      result = firstOperand * Number(currentOperand)
-      break
+      return firstOperand * Number(currentOperand)
+    case '/':
+      return currentOperand === '0' ? 'error' : firstOperand / Number(currentOperand)
+    default:
+      return currentOperand
   }
-  return result
 }
 
 function formatResult (result) {
-  // eslint-disable-next-line prefer-const
-  let resultString = String(result)
-
-  if (resultString.length > MAX_DISPLAY_DIGIT_LENGTH) {
-    result = result.toExponential(2)
-  }
-  return result
+  return String(result).length > MAX_DISPLAY_DIGIT_LENGTH ? result.toExponential(2) : result
 }
 
-function resetCurrentOperandAfterSelectedOperator (statusAAA) {
-  if (statusAAA.pendingResetCurrentOperand) {
-    statusAAA.pendingResetCurrentOperand(false)
+function resetCurrentOperandAfterOperator () {
+  if (calculatorStatus.pendingResetCurrentOperand) {
+    calculatorStatus.setPendingResetCurrentOperand(false)
     currentOperand = ''
   }
 }
 
-// --------------------------------------------------------------- MAIN --------------------------------------------------------------
-
-// Update Status
-function checkStatusAndUpdateCalculator (statusAAA) {
-  let valueToDisplay = currentOperand
-
-  if (valueToDisplay == '') {
-    valueToDisplay = 0
-  }
-
-  // Update Display
-  updateDisplay(valueToDisplay)
-
-  // Disable Buttons if needed
-  if (currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH || statusAAA.hasResult) {
-    disableNumericButtons()
-    if (Number(currentOperand) > 0 || statusAAA.hasResult) {
-      disableToggleNegativeButton()
-    }
-  } else { // Enable Buttons
-    enableNumericButtons()
-    enableToggleNegativeButton()
-  }
-
-  // Enable buttons if operator exists and the display hasn't been reset yet
-  if (operator && statusAAA.pendingResetCurrentOperand) {
-    enableNumericButtons()
-    disableToggleNegativeButton()
-  }
-  console.log(statusAAA)
+function updateCalculatorStatus () {
+  updateDisplay(currentOperand === '' ? '0' : currentOperand)
+  const [shouldDisableNumeric, shouldDisableToggle] = handleCalculatorState()
+  toggleButtonsState(shouldDisableNumeric, shouldDisableToggle)
 }
 
-// Update Display
-function updateDisplay (valueToDisplay) {
-  document.getElementById('calculatorDisplay').value = String(valueToDisplay).replace('.', ',')
+function updateDisplay (value) {
+  document.getElementById('calculatorDisplay').value = String(value).replace('.', ',')
 }
 
-// // Initialize Status
-// function initializeStatus () {
-//   return {
-//     pendingResetCurrentOperand: false,
-//     hasResult: false
-//   }
-// }
+function handleCalculatorState () {
+  const isOperandMaxLength = currentOperand.length >= MAX_DISPLAY_DIGIT_LENGTH
+  const hasResult = calculatorStatus.hasResult
+  const shouldDisableNumeric = (isOperandMaxLength || hasResult) && !calculatorStatus.pendingResetCurrentOperand
+  const shouldDisableToggle = hasResult || (isOperandMaxLength && Number(currentOperand) > 0)
+  return [shouldDisableNumeric, shouldDisableToggle]
+}
+
+function toggleButtonsState (disableNumeric, disableToggle) {
+  toggleButtonGroupState(domNumberButtons, disableNumeric)
+  toggleButtonState(domDecimalButton, disableNumeric)
+  toggleButtonState(domZeroButton, disableNumeric)
+  toggleButtonState(domNegativeButton, disableToggle)
+}

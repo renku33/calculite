@@ -1,23 +1,28 @@
+// eslint-disable-next-line no-unused-vars
 class CalculatorStatus {
-    constructor() {
-        this._pendingResetCurrentOperand = false;
-        this._hasResult = false;
-    }
+  constructor () {
+    this._pendingResetCurrentOperand = false
+    this._hasResult = false
+  }
 
-    set pendingResetCurrentOperand(value) {
-    
-        this._pendingResetCurrentOperand = value;
-        
-    }
+  get pendingResetCurrentOperand () {
+    return this._pendingResetCurrentOperand
+  }
 
-    set hasResult(value) {
-        
-        this._hasResult = value;
-        
-    }
+  setPendingResetCurrentOperand (value) {
+    this._pendingResetCurrentOperand = value
+  }
 
-    reset() {
-        this._pendingResetCurrentOperand = false;
-        this._hasResult = false;
-    }
+  get hasResult () {
+    return this._hasResult
+  }
+
+  setHasResult (value) {
+    this._hasResult = value
+  }
+
+  reset () {
+    this._pendingResetCurrentOperand = false
+    this._hasResult = false
+  }
 }
