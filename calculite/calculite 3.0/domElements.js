@@ -23,11 +23,12 @@ function gatherDomButtons () {
   domDecimalButton = document.querySelector('button[value="."]')
 }
 
+// The click events should generate a state instead of executing functions
 function addEventListeners () {
   domNumberButtons.forEach(button => button.addEventListener('click', () => addDigitToCurrentOperand(button.value)))
   domOperatorsButtons.forEach(button => button.addEventListener('click', () => setOperator(button.value)))
   domZeroButton.addEventListener('click', addZeroToCurrentOperand)
-  domDecimalButton.addEventListener('click', addDecimalToCurrentOperand)
+  domDecimalButton.addEventListener('click', addDecimalSeparatorToCurrentOperand)
   domEqualButton.addEventListener('click', resolveOperation)
   domResetButton.addEventListener('click', resetCalculator)
   domNegativeButton.addEventListener('click', toggleNegative)

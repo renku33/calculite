@@ -38,16 +38,16 @@ function addZeroToCurrentOperand () {
   updateCalculatorStatus()
 }
 
-function addDecimalToCurrentOperand () {
+function addDecimalSeparatorToCurrentOperand () {
   resetCurrentOperandAfterOperator()
   currentOperand = currentOperand.replace('.', '')
   currentOperand += currentOperand === '' ? '0.' : '.'
   updateCalculatorStatus()
 }
 
-function resolveOperation () {
+function resolveOperation (firstOperand, operator, currentOperand) {
   if (operator) {
-    const result = calculateResult(firstOperand, currentOperand) // currentOperand is used as the 2nd operand
+    const result = calculateResult(firstOperand, Number(currentOperand)) // currentOperand is used as the 2nd operand
     currentOperand = formatResult(result) // we assign result to currentOperand to display the number
     calculatorStatus.setHasResult(true)
     operator = ''
@@ -71,19 +71,18 @@ function toggleNegative () {
   updateCalculatorStatus()
 }
 
-function calculateResult (firstOperand, currentOperand) {
-  currentOperand = Number(currentOperand)
+function calculateResult (firstOperand, secondOperand) {
   switch (operator) {
     case '+':
-      return firstOperand + currentOperand
+      return firstOperand + secondOperand
     case '-':
-      return firstOperand - currentOperand
+      return firstOperand - secondOperand
     case '*':
-      return firstOperand * currentOperand
+      return firstOperand * secondOperand
     case '/':
-      return currentOperand === '0' ? 'error' : firstOperand / currentOperand
+      return secondOperand === '0' ? 'error' : firstOperand / secondOperand
     default:
-      return currentOperand
+      return 'error'
   }
 }
 
