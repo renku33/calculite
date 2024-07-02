@@ -34,6 +34,7 @@ function addZeroToCurrentOperand () {
   if (currentOperand.includes('.') || currentOperand !== '') {
     currentOperand += '0'
   }
+  console.log('Curent Operand: ', currentOperand)
   updateCalculatorStatus()
 }
 
@@ -71,15 +72,16 @@ function toggleNegative () {
 }
 
 function calculateResult (firstOperand, currentOperand) {
+  currentOperand = Number(currentOperand)
   switch (operator) {
     case '+':
-      return firstOperand + Number(currentOperand)
+      return firstOperand + currentOperand
     case '-':
-      return firstOperand - Number(currentOperand)
+      return firstOperand - currentOperand
     case '*':
-      return firstOperand * Number(currentOperand)
+      return firstOperand * currentOperand
     case '/':
-      return currentOperand === '0' ? 'error' : firstOperand / Number(currentOperand)
+      return currentOperand === '0' ? 'error' : firstOperand / currentOperand
     default:
       return currentOperand
   }
