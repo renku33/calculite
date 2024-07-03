@@ -12,7 +12,7 @@ let operator = ''
 function initCalculator () {
   calculatorStatus = new CalculatorStatus()
   initCalculatorButtons()
-  updateDisplay(0)
+  updateDisplay()
 }
 
 function addDigitToCurrentOperand (numberValue) {
